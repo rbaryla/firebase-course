@@ -1,16 +1,7 @@
 
 import {COURSES, findLessonsForCourse} from './db-data';
-
+import {CONFIG as config} from './__private';
 import * as firebase from 'firebase';
-
-var config = {
-    apiKey: "AIzaSyDNPCbN20dZrAbGChRjyBSDmu2uRiPyBMk",
-    authDomain: "test-a6f61.firebaseapp.com",
-    databaseURL: "https://test-a6f61.firebaseio.com",
-    projectId: "test-a6f61",
-    storageBucket: "test-a6f61.appspot.com",
-    messagingSenderId: "24603706805"
-};
 
 console.log("Uploading data to the database with the following config:\n");
 
@@ -32,7 +23,7 @@ async function uploadData() {
   Object.values(COURSES)
     .sort((c1:any, c2:any) => c1.seqNo - c2.seqNo)
     .forEach(async (course:any) => {
-
+      console.log(course);
       const newCourse = removeId(course);
 
       const courseRef = await courses.add(newCourse);
@@ -41,7 +32,7 @@ async function uploadData() {
 
       const courseLessons = findLessonsForCourse(course.id);
 
-      //console.log(`Adding ${courseLessons.length} lessons to ${course.description}`);
+      console.log(`Adding ${courseLessons.length} lessons to ${course.description}`);
 
       courseLessons.forEach(async lesson => {
 
