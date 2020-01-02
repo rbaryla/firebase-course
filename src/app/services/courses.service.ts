@@ -8,24 +8,23 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class CoursesService {
-
-  constructor(private db: AngularFirestore) { }
+  constructor(private db: AngularFirestore) {}
 
   loadAllCourses(): Observable<Course[]> {
     return this.db
-    .collection('courses')
-    .snapshotChanges()
-    .pipe(
-      map(snaps =>
-        snaps.map(
-          snap =>
-            <Course>{
-              id: snap.payload.doc.id,
-              ...(snap.payload.doc.data() as Course)
-            }
-        )
-      ),
-      first()
-    );
+      .collection('courses', ref => ref.orderBy('seqNo'))
+      .snapshotChanges()
+      .pipe(
+        map(snaps =>
+          snaps.map(
+            snap =>
+              <Course>{
+                id: snap.payload.doc.id,
+                ...(snap.payload.doc.data() as Course)
+              }
+          )
+        ),
+        first()
+      );
   }
 }
