@@ -94,7 +94,7 @@
       }
     },
     "firebase-course-e2e": {
-      "root": "",
+      "root": "ete",
       "sourceRoot": "",
       "projectType": "application",
       "architect": {

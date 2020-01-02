@@ -1,12 +1,6 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { CONFIG as config } from './../../../__private';
-import * as firebase from 'firebase/app';
-import 'firebase/firestore';
+import { Component, OnInit } from '@angular/core';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { Course } from '../model/course';
-
-firebase.initializeApp(config);
-
-const db = firebase.firestore();
 
 @Component({
   selector: "about",
@@ -14,17 +8,17 @@ const db = firebase.firestore();
   styleUrls: ['./about.component.css']
 })
 export class AboutComponent implements OnInit {
-  constructor() {}
+  constructor(private db: AngularFirestore) {}
 
   ngOnInit() {
-    db.collection('courses')
-      .get()
-      .then(snaps => {
-        const courses: Course[] = snaps.docs.map(snap => {
-          return <Course>{
-            id: snap.id,
-            ...snap.data()
-          };
+    this
+      .db
+      .collection('courses')
+      .snapshotChanges()
+      .subscribe(snaps => {
+        const courses: Course[] = snaps.map(snap => <Course>{
+          id: snap.payload.doc.id,
+          ...snap.payload.doc.data() as Course
         });
         console.log(courses);
       });
