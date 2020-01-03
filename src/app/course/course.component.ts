@@ -1,40 +1,40 @@
-import {AfterViewInit, Component, OnInit, ViewChild} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {Course} from '../model/course';
-import {tap} from 'rxjs/operators';
-import {Observable} from 'rxjs';
-import {Lesson} from '../model/lesson';
-
+import { OnDestroy, Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Course } from '../model/course';
+import { Lesson } from '../model/lesson';
+import { CoursesService } from '../services/courses.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'course',
   templateUrl: './course.component.html',
-  styleUrls: ['./course.component.css']
+  styleUrls: ['./course.component.css'],
 })
-export class CourseComponent implements OnInit {
-
+export class CourseComponent implements OnInit, OnDestroy {
   course: Course;
+  lessons: Lesson[];
+
+  private lessonsSubscriber$: Subscription;
 
   displayedColumns = ['seqNo', 'description', 'duration'];
 
-
   constructor(
-    private route: ActivatedRoute) {
-
-
-  }
+    private route: ActivatedRoute,
+    private coursesService: CoursesService,
+  ) {}
 
   ngOnInit() {
-
     this.course = this.route.snapshot.data['course'];
-
-
-
+    this.lessonsSubscriber$ = this.coursesService
+      .findLessons(this.course.id)
+      .subscribe(lessons => (this.lessons = lessons));
   }
 
-  loadMore() {
-
+  ngOnDestroy() {
+    if (this.lessonsSubscriber$) {
+      this.lessonsSubscriber$.unsubscribe();
+    }
   }
 
-
+  loadMore() {}
 }
