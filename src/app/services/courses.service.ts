@@ -29,7 +29,6 @@ export class CoursesService {
       .pipe(
         map(snaps => {
           const courses = convertSnaps<Course>(snaps);
-          console.log(courses);
           return courses.length === 1 ? courses[0] : undefined;
         }),
         first(),
