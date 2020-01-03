@@ -5,9 +5,9 @@ import { map } from 'rxjs/operators';
 import { CoursesService } from '../services/courses.service';
 
 @Component({
-  selector: "home",
+  selector: 'home',
   templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css']
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
   private corses$: Observable<Course[]>;
@@ -17,18 +17,22 @@ export class HomeComponent implements OnInit {
   constructor(private couresService: CoursesService) {}
 
   ngOnInit() {
+    this.reloadCourses();
+  }
+
+  reloadCourses() {
     this.corses$ = this.couresService.loadAllCourses();
 
     this.beginersCorses$ = this.corses$.pipe(
-      map(courses => courses.filter(
-        course => course.categories.includes('BEGINNER')
-      ))
+      map(courses =>
+        courses.filter(course => course.categories.includes('BEGINNER')),
+      ),
     );
 
     this.advancedCorses$ = this.corses$.pipe(
-      map(courses => courses.filter(
-        course => course.categories.includes('ADVANCED')
-      ))
+      map(courses =>
+        courses.filter(course => course.categories.includes('ADVANCED')),
+      ),
     );
   }
 }
