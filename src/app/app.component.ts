@@ -11,17 +11,22 @@ import { map } from 'rxjs/operators';
 export class AppComponent implements OnInit {
   isLoggedIn$: Observable<boolean>;
   isLoggedOut$: Observable<boolean>;
+  pictureUrl$: Observable<string>;
 
   constructor(private afAuth: AngularFireAuth) {}
-
-  logout() {
-    this.afAuth.auth.signOut();
-  }
 
   ngOnInit(): void {
     this.afAuth.authState.subscribe(user => console.log(user));
 
     this.isLoggedIn$ = this.afAuth.authState.pipe(map(user => !!user));
     this.isLoggedOut$ = this.isLoggedIn$.pipe(map(loggedIn => !loggedIn));
+
+    this.pictureUrl$ = this.afAuth.authState.pipe(
+      map(user => (user ? user.photoURL : null)),
+    );
+  }
+
+  logout(): void {
+    this.afAuth.auth.signOut();
   }
 }
