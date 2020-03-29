@@ -1,47 +1,38 @@
-import {Component, OnInit} from '@angular/core';
-import {Course} from '../model/course';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
-import {AngularFirestore} from '@angular/fire/firestore';
-import {CoursesService} from '../services/courses.service';
-
+import { Component, OnInit } from '@angular/core';
+import { Course } from '../model/course';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { CoursesService } from '../services/courses.service';
 
 @Component({
-    selector: 'home',
-    templateUrl: './home.component.html',
-    styleUrls: ['./home.component.css']
+  selector: 'home',
+  templateUrl: './home.component.html',
+  styleUrls: ['./home.component.css'],
 })
 export class HomeComponent implements OnInit {
+  private corses$: Observable<Course[]>;
+  beginersCorses$: Observable<Course[]>;
+  advancedCorses$: Observable<Course[]>;
 
-    courses$: Observable<Course[]>;
+  constructor(private couresService: CoursesService) {}
 
-    beginnersCourses$: Observable<Course[]>;
+  ngOnInit() {
+    this.reloadCourses();
+  }
 
-    advancedCourses$: Observable<Course[]>;
+  reloadCourses() {
+    this.corses$ = this.couresService.loadAllCourses();
 
-    constructor(private coursesService: CoursesService) {
+    this.beginersCorses$ = this.corses$.pipe(
+      map(courses =>
+        courses.filter(course => course.categories.includes('BEGINNER')),
+      ),
+    );
 
-    }
-
-    ngOnInit() {
-
-        this.reloadCourses();
-
-    }
-
-    reloadCourses() {
-        this.courses$ = this.coursesService.loadAllCourses();
-
-        this.beginnersCourses$ = this.courses$.pipe(
-            map(courses => courses.filter(
-                course => course.categories.includes("BEGINNER"))));
-
-        this.advancedCourses$ = this.courses$.pipe(
-            map(courses => courses.filter(
-                course => course.categories.includes("ADVANCED"))));
-    }
-
-
-
-
+    this.advancedCorses$ = this.corses$.pipe(
+      map(courses =>
+        courses.filter(course => course.categories.includes('ADVANCED')),
+      ),
+    );
+  }
 }

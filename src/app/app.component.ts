@@ -1,42 +1,32 @@
-import {Component, OnInit} from '@angular/core';
-import {AngularFireAuth} from '@angular/fire/auth';
-import {Observable} from 'rxjs';
-import {map} from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core';
+import { AngularFireAuth } from '@angular/fire/auth';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  styleUrls: ['./app.component.css'],
 })
 export class AppComponent implements OnInit {
+  isLoggedIn$: Observable<boolean>;
+  isLoggedOut$: Observable<boolean>;
+  pictureUrl$: Observable<string>;
 
-    isLoggedIn$: Observable<boolean>;
+  constructor(private afAuth: AngularFireAuth) {}
 
-    isLoggedOut$:Observable<boolean>;
+  ngOnInit(): void {
+    this.afAuth.authState.subscribe(user => console.log(user));
 
-    pictureUrl$: Observable<string>;
+    this.isLoggedIn$ = this.afAuth.authState.pipe(map(user => !!user));
+    this.isLoggedOut$ = this.isLoggedIn$.pipe(map(loggedIn => !loggedIn));
 
-    constructor(private afAuth: AngularFireAuth) {
+    this.pictureUrl$ = this.afAuth.authState.pipe(
+      map(user => (user ? user.photoURL : null)),
+    );
+  }
 
-
-    }
-
-    ngOnInit() {
-
-        this.afAuth.authState.subscribe(user => console.log(user));
-
-        this.isLoggedIn$ = this.afAuth.authState.pipe(map(user => !!user));
-
-        this.isLoggedOut$ = this.isLoggedIn$.pipe(map(loggedIn => !loggedIn));
-
-        this.pictureUrl$ =
-            this.afAuth.authState.pipe(map(user => user ? user.photoURL: null));
-    }
-
-    logout() {
-
-        this.afAuth.auth.signOut();
-
-    }
-
+  logout(): void {
+    this.afAuth.auth.signOut();
+  }
 }
