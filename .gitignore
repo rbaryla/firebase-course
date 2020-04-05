@@ -43,3 +43,6 @@ Thumbs.db
 
 # Private
 __private.*
+
+# Firebase
+.firebaserc
